@@ -1,4 +1,4 @@
-module register_file (iRaddr1, iRaddr2, iWaddr, oRdata1, oRdata2, iWdata, iWe, iClk, iReset);
+module regfile (iRaddr1, iRaddr2, iWaddr, oRdata1, oRdata2, iWdata, iWe, iClk, iReset);
 	input [4:0] iRaddr1, iRaddr2, iWaddr;
 	input [31:0] iWdata;
 	input iClk, iReset, iWe;
@@ -10,7 +10,7 @@ module register_file (iRaddr1, iRaddr2, iWaddr, oRdata1, oRdata2, iWdata, iWe, i
 	assign oRdata1 = reg_file[iRaddr1];
 	assign oRdata2 = reg_file[iRaddr2];
 
-	always @(posedge iClk or posedge iReset) // Ou combines the block of reset into the block of posedge clk
+	always @(posedge iClk or posedge iReset)
 	begin
 		if (iReset==1'b1)
 		begin
@@ -19,10 +19,9 @@ module register_file (iRaddr1, iRaddr2, iWaddr, oRdata1, oRdata2, iWdata, iWe, i
 				reg_file[k] = 32'b0;
 			end
 		end 
-		
-		else if (iWe == 1'b1) reg_file[iWaddr] = iWdata; 
+      else if (iWe == 1'b1) 
+        begin 
+        	if(iWaddr > 0) reg_file[iWaddr] = iWdata; 
+      	end
 	end
-	
-
-
 endmodule
