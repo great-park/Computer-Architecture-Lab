@@ -2,6 +2,8 @@
 `include "regfile.sv"
 `include "imem.sv"
 `include "dmem.sv"
+`include "sign_extend.sv"
+`include "pc.sv"
 
 module datapath(
   input logic iClk,
@@ -11,7 +13,7 @@ module datapath(
   input logic [2:0] iALUControl
 );
   wire [31:0] ipc, opc;
-  pc pc_0(.ipc(ipc), .clk(iClk), .opc(opc));
+  pc pc_0(.ipc(0), .clk(iClk), .reset(iReset), .opc(opc));
   
   wire [31:0] instruction;
   imem imem_0(.iAddr(opc), .oRdata(instruction));
@@ -31,7 +33,7 @@ module datapath(
   
   wire [31:0] sign_ex;
   sign_extend sign_extend_0(
-    .idata(instruction[15:0])
+    .idata(instruction[15:0]),
     .odata(sign_ex)
   );
   
