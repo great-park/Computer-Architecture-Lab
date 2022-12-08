@@ -14,6 +14,7 @@ module mips(
   logic [31:0] IMEM_Inst;
   logic [31:0] DMEM_ReadData;
   logic [31:0] pc;
+  logic [31:0] Write_Data;
   
   logic CTL_RegWrite;
   logic CTL_MemWrite;
@@ -31,12 +32,12 @@ module mips(
     .iClk	(iClk),
     .iReset	(iReset),
     .iRaddr1(IMEM_Inst[25:21]),
-    .iRaddr2(),
+    .iRaddr2(IMEM_Inst[20:16]),
     .iWaddr	(IMEM_Inst[20:16]),
     .iWe	(CTL_RegWrite),
     .iWdata	(DMEM_ReadData),
     .oRdata1(REG_SrcA),
-    .oRdata2()
+    .oRdata2(Write_Data)
   );
   
   imem IMEM(
@@ -48,7 +49,7 @@ module mips(
     .iClk	(iClk),
     .iWe	(CTL_MemWrite),
     .iAddr	(ALU_ALUResult),
-    .iWdata	(),
+    .iWdata	(Write_Data),
     .oRdata	(DMEM_ReadData)
   );
   
