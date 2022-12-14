@@ -76,27 +76,6 @@ module mips(
   assign SrcB = CTL_ALUSrc ? IMEM_Inst : REG_WriteData;
   assign Result = CTL_MemtoReg ? DMEM_ReadData : ALU_ALUResult;
 
-  // mux5 MUX5(
-  //   .in0(IMEM_Inst[20:16]),
-  //   .in1(IMEM_Inst[15:11]),
-  //   .sel(CTL_RegDst),
-  //   .out(WriteReg)
-  // );
-
-  // mux32 MUX32a(
-  //   .in0(REG_WriteData),
-  //   .in1(IMEM_Inst),
-  //   .sel(CTL_ALUSrc),
-  //   .out(SrcB)
-  // );
-
-  // mux32 MUX32b(
-  //   .in0(ALU_ALUResult),
-  //   .in1(DMEM_ReadData),
-  //   .sel(CTL_MemtoReg),
-  //   .out(Result)
-  // );
-
   always_ff@(posedge iClk, posedge iReset)
     if(iReset)
       pc <= 0;
