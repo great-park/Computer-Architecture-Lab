@@ -8,9 +8,6 @@ module mips(
   input logic iClk,
   input logic iReset
 );
-
-
-
   logic [31:0] IMEM_InstF;
   logic [31:0] IMEM_InstD;
   logic [31:0] REG_SrcAD;
@@ -49,24 +46,10 @@ module mips(
   logic CTL_MemWriteE;
   logic CTL_MemWriteM;
   logic [31:0] ResultW;
-  
-  
-  
-
-  
   logic [31:0] DMEM_ReadDataM;
   logic [31:0] DMEM_ReadDataW;
-
   logic [31:0] pc;
-  
 
-  
-  
-  
-  
-  
-  
-  
   assign RtD = IMEM_InstD[20:16];
   assign RdD = IMEM_InstD[15:11];
   assign WriteRegE = CTL_RegDstE ? RdE : RtE;
