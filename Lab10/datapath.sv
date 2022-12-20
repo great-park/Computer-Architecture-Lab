@@ -23,6 +23,7 @@ module mips(
   logic [4:0] RdE;
 
   logic [4:0] WriteRegE;
+  logic [4:0] WriteRegM;
   logic CTL_RegDstD;
   logic CTL_RegDstE;
   logic CTL_ALUSrcD;
@@ -35,12 +36,15 @@ module mips(
   logic [31:0] REG_WriteDataD;
   logic [31:0] REG_WriteDataE;
   logic [31:0] REG_WriteDataM;
+  logic CTL_RegWriteD;
+  logic CTL_RegWriteE;
+  logic CTL_RegWriteM;
+  logic CTL_RegWriteW;
+  
+  
+  
+  
 
-  
-  
-  
-  
-  logic [4:0] WriteRegM;
   logic [4:0] WriteRegW;
   logic [31:0] DMEM_ReadDataM;
   logic [31:0] DMEM_ReadDataW;
@@ -48,7 +52,7 @@ module mips(
   logic [31:0] pc;
   logic [31:0] Result;
 
-  logic CTL_RegWrite;
+  
   logic CTL_MemWrite;
   
   
@@ -79,7 +83,7 @@ module mips(
     .iRaddr1(IMEM_InstD[25:21]),
     .iRaddr2(IMEM_InstD[20:16]),
     .iWaddr	(WriteReg),
-    .iWe	(CTL_RegWrite),
+    .iWe	(CTL_RegWriteW),
     .iWdata	(Result),
     .oRdata1(REG_SrcAD),
     .oRdata2(REG_WriteDataD)
@@ -102,7 +106,7 @@ module mips(
   controller CTL(
     .iOp		(IMEM_InstD[31:26]),
     .iFunc		(IMEM_InstD[5:0]),
-    .oRegWrite	(CTL_RegWrite),
+    .oRegWrite	(CTL_RegWriteD),
     .oMemWrite	(CTL_MemWrite),
     .oRegDst	(CTL_RegDstD),
     .oALUSrc	(CTL_ALUSrcD),
@@ -130,6 +134,9 @@ module mips(
           CTL_ALUControlE <= 0;
           ALU_ALUResultM <= 0;
           WriteRegM <= 0;
+          CTL_RegWriteE <= 0;
+          CTL_RegWriteM <= 0;
+          CTL_RegWriteW <= 0;
         end else begin 
           IMEM_InstD <= IMEM_InstF;
           REG_SrcAE <= REG_SrcAD;
@@ -143,6 +150,9 @@ module mips(
           CTL_ALUControlE <= CTL_ALUControlD;
           ALU_ALUResultM <= ALU_ALUResultE;
           WriteRegM <+ WriteRegE;
+          CTL_RegWriteE <= CTL_RegWriteD;
+          CTL_RegWriteM <= CTL_RegWriteE;
+          CTL_RegWriteW <= CTL_RegWriteM;
         end
 
 endmodule
