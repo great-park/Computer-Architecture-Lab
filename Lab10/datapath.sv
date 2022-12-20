@@ -22,14 +22,24 @@ module mips(
   logic [4:0] RtE;
   logic [4:0] RdE;
 
-
-
+  logic [4:0] WriteRegE;
+  logic CTL_RegDstD;
+  logic CTL_RegDstE;
+  logic CTL_ALUSrcD;
+  logic CTL_ALUSrcE;
+  logic [2:0] CTL_ALUControlD;
+  logic [2:0] CTL_ALUControlE;
   logic [31:0] ALU_ALUResultE;
   logic [31:0] ALU_ALUResultM;
   logic [31:0] SrcBE;
   logic [31:0] REG_WriteDataD;
   logic [31:0] REG_WriteDataE;
-  logic [4:0] WriteRegE;
+  logic [31:0] REG_WriteDataM;
+
+  
+  
+  
+  
   logic [4:0] WriteRegM;
   logic [4:0] WriteRegW;
   logic [31:0] DMEM_ReadDataM;
@@ -38,16 +48,9 @@ module mips(
   logic [31:0] pc;
   logic [31:0] Result;
 
-
-  logic CTL_ALUSrcD;
-  logic CTL_ALUSrcE;
-
-  logic [2:0] CTL_ALUControlD;
-  logic [2:0] CTL_ALUControlE;
-  
   logic CTL_RegWrite;
   logic CTL_MemWrite;
-  logic CTL_RegDst;
+  
   
   logic CTL_MemtoRegD;
   logic CTL_MemtoRegE;
@@ -57,16 +60,16 @@ module mips(
   
   assign RtD = IMEM_InstD[20:16];
   assign RdD = IMEM_InstD[15:11];
-  assign WriteReg = CTL_RegDst ? Rd : Rt;
+  assign WriteRegE = CTL_RegDstE ? RdE : RtE;
   assign SignImmD = {{16{IMEM_InstD[15]}}, IMEM_InstD[15:0]};
-  assign SrcB = CTL_ALUSrc ? SignImmD : REG_WriteData;
-  assign Result = CTL_MemtoReg ? DMEM_ReadData : ALU_ALUResult;
+  assign SrcBE = CTL_ALUSrcE ? SignImmE : REG_WriteDataE;
+  assign Result = CTL_MemtoReg ? DMEM_ReadData : ALU_ALUResultM;
   
   alu ALU(
     .iA		(REG_SrcAE),
-    .iB		(SrcB),
-    .iF		(CTL_ALUControl),
-    .oY		(ALU_ALUResult),
+    .iB		(SrcBE),
+    .iF		(CTL_ALUControlE),
+    .oY		(ALU_ALUResultE),
     .oZero	()
   );
   
@@ -91,8 +94,8 @@ module mips(
     .iClk	(iClk),
     .iReset	(iReset),
     .iWe	(CTL_MemWrite),
-    .iAddr	(ALU_ALUResult),
-    .iWdata	(REG_WriteData),
+    .iAddr	(ALU_ALUResultM),
+    .iWdata	(REG_WriteDataM),
     .oRdata	(DMEM_ReadData)
   );
   
@@ -101,10 +104,10 @@ module mips(
     .iFunc		(IMEM_InstD[5:0]),
     .oRegWrite	(CTL_RegWrite),
     .oMemWrite	(CTL_MemWrite),
-    .oRegDst	(CTL_RegDst),
-    .oALUSrc	(CTL_ALUSrc),
+    .oRegDst	(CTL_RegDstD),
+    .oALUSrc	(CTL_ALUSrcD),
     .oMemtoReg	(CTL_MemtoReg),
-    .oALUControl(CTL_ALUControl)
+    .oALUControl(CTL_ALUControlD)
   );
   
   always_ff@(posedge iClk, posedge iReset)
@@ -118,16 +121,28 @@ module mips(
       	  IMEM_InstD <= 0;
           REG_SrcAE <= 0;
           REG_WriteDataE <= 0;
+          REG_WriteDataM <= 0;
           RtE <= 0;
           RdE <= 0;
           SignImmE <= 0;
+          CTL_RegDstE <= 0;
+          CTL_ALUSrcE <= 0;
+          CTL_ALUControlE <= 0;
+          ALU_ALUResultM <= 0;
+          WriteRegM <= 0;
         end else begin 
           IMEM_InstD <= IMEM_InstF;
           REG_SrcAE <= REG_SrcAD;
           REG_WriteDataE <= REG_WriteDataD;
+          REG_WriteDataM <= REG_WriteDataE;
           RtE <= RtD;
           RdE <= RdD;
           SignImmE <= SignImmD;
+          CTL_RegDstE <= CTL_RegDstD;
+          CTL_ALUSrcE <= CTL_ALUSrcD;
+          CTL_ALUControlE <= CTL_ALUControlD;
+          ALU_ALUResultM <= ALU_ALUResultE;
+          WriteRegM <+ WriteRegE;
         end
 
 endmodule
